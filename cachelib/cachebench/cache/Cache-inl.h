@@ -391,7 +391,6 @@ template <typename Allocator>
 typename Cache<Allocator>::ItemHandle Cache<Allocator>::insertOrReplace(
     const ItemHandle& handle) {
   itemRecords_.addItemRecord(handle);
-
   if (!consistencyCheckEnabled()) {
     try {
       return cache_->insertOrReplace(handle);
@@ -418,6 +417,7 @@ typename Cache<Allocator>::ItemHandle Cache<Allocator>::find(Key key,
     // find from cache and wait for the result to be ready.
     auto it = cache_->find(key, mode);
     it.wait();
+
     return it;
   };
 

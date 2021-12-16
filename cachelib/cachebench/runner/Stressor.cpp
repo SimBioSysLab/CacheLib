@@ -41,8 +41,25 @@ ThroughputStats& ThroughputStats::operator+=(const ThroughputStats& other) {
   addChained += other.addChained;
   addChainedFailure += other.addChainedFailure;
   ops += other.ops;
+  pageGet += other.pageGet;
+  pageSet += other.pageSet;
+  pageGetMiss += other.pageGetMiss;
 
   return *this;
+}
+
+void ThroughputStats::renderBlockReplayStats(uint64_t elapsedTimeNs, std::ostream& out) const {
+
+  const double elapsedSecs = elapsedTimeNs / static_cast<double>(1e9);
+  out << std::fixed;
+  out << folly::sformat("===Output===") << std::endl;
+  out << folly::sformat("Time(sec):{} \nTotal Ops:{} \nRead:{} \nPageRead:{} \nPageWrite:{} \nMiss:{} \n", 
+    elapsedSecs, 
+    ops, 
+    get, 
+    pageGet, 
+    pageSet, 
+    pageGetMiss);
 }
 
 void ThroughputStats::render(uint64_t elapsedTimeNs, std::ostream& out) const {
@@ -131,6 +148,8 @@ std::unique_ptr<GeneratorBase> makeGenerator(const StressorConfig& config) {
     return std::make_unique<PieceWiseReplayGenerator>(config);
   } else if (config.generator == "replay") {
     return std::make_unique<ReplayGenerator>(config);
+  } else if (config.generator == "block-replay") {
+    return std::make_unique<BlockTraceReplay>(config);
   } else if (config.generator.empty() || config.generator == "workload") {
     // TODO: Remove the empty() check once we label workload-based configs
     // properly

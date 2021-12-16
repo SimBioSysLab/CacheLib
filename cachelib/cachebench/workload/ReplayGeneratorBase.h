@@ -45,10 +45,10 @@ class ReplayGeneratorBase : public GeneratorBase {
           "Cannot replay traces with consistency checking enabled"));
     }
     std::string file;
-    if (config.traceFileName[0] == '/') {
-      file = config.traceFileName;
+    if (config.traceFilePath[0] == '/') {
+      file = config.traceFilePath;
     } else {
-      file = folly::sformat("{}/{}", config.configPath, config.traceFileName);
+      file = folly::sformat("{}/{}", config.configPath, config.traceFilePath);
     }
     infile_.open(file);
     if (infile_.fail()) {
@@ -56,7 +56,7 @@ class ReplayGeneratorBase : public GeneratorBase {
           folly::sformat("could not read file: {}", file));
     }
     infile_.rdbuf()->pubsetbuf(infileBuffer_, kIfstreamBufferSize);
-    // header
+
     std::string row;
     std::getline(infile_, row);
   }
@@ -71,7 +71,7 @@ class ReplayGeneratorBase : public GeneratorBase {
   void resetTraceFileToBeginning() {
     infile_.clear();
     infile_.seekg(0, std::ios::beg);
-    // header
+
     std::string row;
     std::getline(infile_, row);
   }

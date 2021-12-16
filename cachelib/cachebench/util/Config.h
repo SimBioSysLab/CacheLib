@@ -214,7 +214,19 @@ struct StressorConfig : public JSONConfig {
   // Trace file containing the operations for more accurate replay
   // Supported formats include specifying an absolute filename and filename
   // relative to the configPath
-  std::string traceFileName{};
+  std::string traceFilePath{};
+
+  // // The file where IO access pattern is simulated on cache misses when replaying in block-replay mode 
+  std::string diskFilePath{};
+
+  // // min LBA used to map access pattern in the disk file 
+  uint64_t minLBA;
+
+  // // block size in bytes used during block trace replay
+  uint64_t traceBlockSize;
+
+  // // page size of the cache 
+  uint64_t pageSize;
 
   // location of the path for the files referenced inside the json. If not
   // specified, it defaults to the path of the json file being parsed.
